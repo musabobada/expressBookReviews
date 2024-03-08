@@ -49,10 +49,24 @@ regd_users.post("/login", (req, res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   let review = {
+    username: req.query.username,
     review: req.query.review
   }
   books[req.params.isbn - 1].reviews = review
   return res.send(`the review for book with ISBN ${[req.params.isbn]} added/updated successfully`);
+});
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  try {
+    let username = req.query.username
+    books.forEach((book, i) => {
+      if (i === req.params.isbn - 1) {
+        book.reviews = book.reviews.filter(review => review.username !== username)
+      }
+    })
+    return res.send(`the review for book with ISBN ${[req.params.isbn]} and user ${username} deleted successfully`);
+  } catch (error) {
+    return res.send(`the review for not found`);
+  }
 });
 
 module.exports.authenticated = regd_users;
